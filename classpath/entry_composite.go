@@ -3,32 +3,33 @@ package classpath
 import "strings"
 import "errors"
 
+//CompositeEntry 复合类型
 type CompositeEntry []Entry
 
-func newCompositeEntry(pathList string) CompositeEntry{
+func newCompositeEntry(pathList string) CompositeEntry {
 	compositeEntry := []Entry{}
-	
-	for _,path := range strings.Split(pathList,pathListSeperator){
+
+	for _, path := range strings.Split(pathList, pathListSeperator) {
 		entry := newEntry(path)
-		compositeEntry = append(compositeEntry,entry)
+		compositeEntry = append(compositeEntry, entry)
 	}
 	return compositeEntry
 }
 
-func (self CompositeEntry) readClass(className string) ([]byte,Entry,error){
-	for _,entry := range self{
-		data,from,err := entry.readClass(className)
-		if err==nil{
-			return data,from,err
+func (compositeEntry CompositeEntry) readClass(className string) ([]byte, Entry, error) {
+	for _, entry := range compositeEntry {
+		data, from, err := entry.readClass(className)
+		if err == nil {
+			return data, from, err
 		}
 	}
-	return nil,nil,errors.New("class not found, className: "+className)
+	return nil, nil, errors.New("class not found, className: " + className)
 }
 
-func (self CompositeEntry) String() string{
-	strArray := make([]string,len(self))
-	for _,entry := range self {
-		strArray = append(strArray,entry.String())
+func (compositeEntry CompositeEntry) String() string {
+	strArray := make([]string, len(compositeEntry))
+	for _, entry := range compositeEntry {
+		strArray = append(strArray, entry.String())
 	}
-	return strings.Join(strArray,pathListSeperator)
+	return strings.Join(strArray, pathListSeperator)
 }

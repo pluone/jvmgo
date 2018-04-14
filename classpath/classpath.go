@@ -1,72 +1,77 @@
 package classpath
+
 import "path/filepath"
 import "os"
 import "errors"
+
+//Classpath classpath
 type Classpath struct {
 	bootClasspath Entry
-	extClasspath Entry
+	extClasspath  Entry
 	userClasspath Entry
 }
 
-func Parse(jreOption,cpOption string) *Classpath{
+//Parse do parse
+func Parse(jreOption, cpOption string) *Classpath {
 	cp := &Classpath{}
 	cp.parseBootAndExtClasspath(jreOption)
 	cp.parseUserClasspath(cpOption)
 	return cp
 }
 
-func (self *Classpath) parseUserClasspath(cpOption string){
-	if cpOption == ""{
+func (classpath *Classpath) parseUserClasspath(cpOption string) {
+	if cpOption == "" {
 		cpOption = "."
 	}
-	self.userClasspath = newCompositeEntry(cpOption)
+	classpath.userClasspath = newCompositeEntry(cpOption)
 }
 
-func (self *Classpath) parseBootAndExtClasspath(jreOption string){
+func (classpath *Classpath) parseBootAndExtClasspath(jreOption string) {
 	jreDir := getJreDir(jreOption)
-	self.bootClasspath = newWildcardEntry( filepath.Join(jreDir,"lib","*"))
-	self.extClasspath = newWildcardEntry(filepath.Join("lib","ext","*"))
+	classpath.bootClasspath = newWildcardEntry(filepath.Join(jreDir, "lib", "*"))
+	classpath.extClasspath = newWildcardEntry(filepath.Join("lib", "ext", "*"))
 }
 
-func getJreDir(jreOption string) string{
-	if jreOption!="" && exist(jreOption){
+func getJreDir(jreOption string) string {
+	if jreOption != "" && exist(jreOption) {
 		return jreOption
 	}
-	if exist(filepath.Join(".","jre")){
-		return filepath.Join(".","jre")
+	if exist(filepath.Join(".", "jre")) {
+		return filepath.Join(".", "jre")
 	}
-	if jh:= os.Getenv("JAVA_HOME") ; jh!=""{
-		return filepath.Join(jh,"jre")
+	if jh := os.Getenv("JAVA_HOME"); jh != "" {
+		return filepath.Join(jh, "jre")
 	}
 	panic("cannot find jre folder!")
 
 }
 
 func exist(path string) bool {
-	_,err:=os.Stat(path)
-	if err!=nil && os.IsNotExist(err) {
+	_, err := os.Stat(path)
+	if err != nil && os.IsNotExist(err) {
 		return false
 	}
 	return true
 }
 
-func (self *Classpath) ReadClass(className string) ([]byte,Entry,error){
+//ReadClass read class data
+func (classpath *Classpath) ReadClass(className string) ([]byte, Entry, error) {
 	className = className + ".class"
-	data,entry,err := self.bootClasspath.readClass(className)
+	data, entry, err := classpath.bootClasspath.readClass(className)
 	if err == nil {
-		return data,entry,err
+		return data, entry, err
 	}
-	data,entry,err = self.extClasspath.readClass(className)
+	data, entry, err = classpath.extClasspath.readClass(className)
 	if err == nil {
-		return data,entry,err
+		return data, entry, err
 	}
-	data,entry,err = self.userClasspath.readClass(className)
+	data, entry, err = classpath.userClasspath.readClass(className)
 	if err == nil {
-		return data,entry,err
+		return data, entry, err
 	}
-	return nil,nil,errors.New("class not found, className: "+className)
+	return nil, nil, errors.New("class not found, className: " + className)
 }
 
-func (self *Classpath) String() string {
-	return self.bootClasspath.String()+"\n"+self.extClasspath.String()+"\n"+self.userClasspath.String()
+func (classpath *Classpath) String() string {
+	return classpath.bootClasspath.String() + "\n" + classpath.extClasspath.String() + "\n" + classpath.userClasspath.String()
 }

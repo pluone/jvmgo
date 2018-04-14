@@ -4,6 +4,7 @@ import "flag"
 import "fmt"
 import "os"
 
+//Cmd jvmgo的命令行调用格式
 type Cmd struct {
 	helpFlag    bool
 	versionFlag bool
