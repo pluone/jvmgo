@@ -73,5 +73,5 @@ func (classpath *Classpath) ReadClass(className string) ([]byte, Entry, error) {
 }
 
 func (classpath *Classpath) String() string {
-	return classpath.bootClasspath.String() + "\n" + classpath.extClasspath.String() + "\n" + classpath.userClasspath.String()
+	return classpath.userClasspath.String()
 }
