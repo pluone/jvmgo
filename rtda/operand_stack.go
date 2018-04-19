@@ -1,6 +1,7 @@
 package rtda
 
 import "math"
+
 //OperandStack 操作数栈
 type OperandStack struct {
 	size  uint
@@ -10,7 +11,7 @@ type OperandStack struct {
 func newOperandStack(maxStackSize uint) *OperandStack {
 	if maxStackSize > 0 {
 		return &OperandStack{
-			size:    0,
+			size:  0,
 			slots: make([]Slot, maxStackSize),
 		}
 	}
@@ -51,8 +52,8 @@ func (stack *OperandStack) PushLong(val int64) {
 
 func (stack *OperandStack) PopLong() int64 {
 	stack.size -= 2
-	low := stack.slots[stack.size].num
-	high := stack.slots[stack.size+1].num
+	low := uint32(stack.slots[stack.size].num)
+	high := uint32(stack.slots[stack.size+1].num)
 	return int64(low) | int64(high)<<32
 }
 
