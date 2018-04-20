@@ -20,7 +20,7 @@ func main() {
 }
 
 func testJVMStack() {
-	frame := rtda.NewFrame(100, 100)
+	frame := rtda.NewFrame(nil, 100, 100)
 	testLocalVals(frame.LocalVar())
 	testOperandStack(frame.OperandStack())
 }
@@ -74,8 +74,22 @@ func startJVM(cmd *Cmd) {
 	if err != nil {
 		fmt.Println("parse class data failed")
 	}
-	printClassInfo(cf)
+	// printClassInfo(cf)
+	mainMethod := getMainMethod(cf)
+	if mainMethod != nil {
+		interpret(mainMethod)
+	}
 
+}
+
+func getMainMethod(cf *classfile.ClassFile) *classfile.MemberInfo {
+	methods := cf.Methods()
+	for _, method := range methods {
+		if "main" == method.Name() && "([Ljava/lang/String;)V" == method.Descriptor() {
+			return method
+		}
+	}
+	return nil
 }
 
 func printClassInfo(cf *classfile.ClassFile) {

@@ -5,7 +5,7 @@ import "math"
 //LocalVar 局部变量表类型
 type LocalVar []Slot
 
-func newLocalVal(maxSize uint) LocalVar {
+func newLocalVal(maxSize uint16) LocalVar {
 	if maxSize > 0 {
 		return make([]Slot, maxSize)
 	}

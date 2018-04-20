@@ -31,3 +31,19 @@ func readMember(cr *ClassReader, cp *ConstantPool) *MemberInfo {
 func (member *MemberInfo) Name() string {
 	return member.constantPool.getUtf8String(member.nameIndex)
 }
+
+func (member *MemberInfo) Descriptor() string {
+	return member.constantPool.getUtf8String(member.descriptorIndex)
+}
+
+func (member *MemberInfo) CodeAttribute() *CodeAttribute {
+	println("------")
+	println(member.attributes)
+	for _, attrInfo := range member.attributes {
+		switch attrInfo.(type) {
+		case *CodeAttribute:
+			return attrInfo.(*CodeAttribute)
+		}
+	}
+	return nil
+}

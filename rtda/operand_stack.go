@@ -8,7 +8,7 @@ type OperandStack struct {
 	slots []Slot
 }
 
-func newOperandStack(maxStackSize uint) *OperandStack {
+func newOperandStack(maxStackSize uint16) *OperandStack {
 	if maxStackSize > 0 {
 		return &OperandStack{
 			size:  0,
@@ -76,4 +76,15 @@ func (stack *OperandStack) PopRef() *Object {
 	refVal := stack.slots[stack.size].ref
 	stack.slots[stack.size].ref = nil //help gc
 	return refVal
+}
+
+func (stack *OperandStack) PushSlot(slot Slot) {
+	stack.slots[stack.size] = slot
+	stack.size++
+}
+
+func (stack *OperandStack) PopSlot() Slot {
+	stack.size--
+	slot := stack.slots[stack.size]
+	return slot
 }

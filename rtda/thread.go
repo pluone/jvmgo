@@ -18,3 +18,15 @@ func (thread *Thread) PushFrame(frame *Frame) {
 func (thread *Thread) PopFrame() *Frame {
 	return thread.stack.pop()
 }
+
+func (thread *Thread) NewFrame(maxLocals, maxStack uint16) *Frame {
+	return NewFrame(thread, maxLocals, maxStack)
+}
+
+func (thread *Thread) PC() int {
+	return thread.pc
+}
+
+func (thread *Thread) SetPC(pc int) {
+	thread.pc = pc
+}
