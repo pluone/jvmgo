@@ -28,6 +28,10 @@ func readMember(cr *ClassReader, cp *ConstantPool) *MemberInfo {
 	}
 }
 
+func (member *MemberInfo) AccessFlags() uint16 {
+	return member.accessFlags
+}
+
 func (member *MemberInfo) Name() string {
 	return member.constantPool.getUtf8String(member.nameIndex)
 }
@@ -37,12 +41,20 @@ func (member *MemberInfo) Descriptor() string {
 }
 
 func (member *MemberInfo) CodeAttribute() *CodeAttribute {
-	println("------")
-	println(member.attributes)
 	for _, attrInfo := range member.attributes {
 		switch attrInfo.(type) {
 		case *CodeAttribute:
 			return attrInfo.(*CodeAttribute)
+		}
+	}
+	return nil
+}
+
+func (member *MemberInfo) ConstatnValueAttribute() *ConstantValueAttribute {
+	for _, attr := range member.attributes {
+		switch attr.(type) {
+		case *ConstantValueAttribute:
+			return attr.(*ConstantValueAttribute)
 		}
 	}
 	return nil

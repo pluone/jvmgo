@@ -6,7 +6,7 @@ import (
 
 type Instruction interface {
 	FetchOperands(reader *ByteCodeReader)
-	Execute(rame *rtda.Frame)
+	Execute(frame *rtda.Frame)
 }
 
 //NoOperandsInstruction 表示无操作数的指令

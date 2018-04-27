@@ -90,10 +90,21 @@ func (cf *ClassFile) InterfaceNames() []string {
 	return interfaceNames
 }
 
-func (cf *ClassFile) Fields() []*MemberInfo{
+func (cf *ClassFile) SuperClassName() string {
+	if cf.superClass > 0{//常量池索引0为无效索引
+		return cf.constantPool.getClassName(cf.superClass)
+	}
+	return ""
+}
+
+func (cf *ClassFile) ClassName() string {
+	return cf.constantPool.getClassName(cf.thisClass)
+}
+
+func (cf *ClassFile) Fields() []*MemberInfo {
 	return cf.fields
 }
 
-func (cf *ClassFile) Methods() []*MemberInfo{
+func (cf *ClassFile) Methods() []*MemberInfo {
 	return cf.methods
 }

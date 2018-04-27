@@ -53,8 +53,12 @@ func NewInstruction(opcode uint8) base.Instruction {
 		return iconst_1
 	case 0x10:
 		return &constants.BIPUSH{}
-	// case 0x12:
-	// 	return 
+	case 0x12:
+		return &constants.LDC{}
+	case 0x13:
+		return &constants.LDC_W{}
+	case 0x14:
+		return &constants.LDC2_W{}
 	case 0x1b:
 		return iload_1
 	case 0x1c:

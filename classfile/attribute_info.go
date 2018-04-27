@@ -6,17 +6,16 @@ type AttributeInfo interface {
 
 func readAttributes(cr *ClassReader, cp *ConstantPool) []AttributeInfo {
 	count := cr.readUint16()
-	attributs := make([]AttributeInfo, count)
-	for i := range attributs {
-		attributs[i] = readAttribute(cr, cp)
+	attributes := make([]AttributeInfo, count)
+	for i := range attributes {
+		attributes[i] = readAttribute(cr, cp)
 	}
-	return attributs
+	return attributes
 }
 
 func readAttribute(cr *ClassReader, cp *ConstantPool) AttributeInfo {
 	attributeNameIndex := cr.readUint16()
 	attrName := cp.getUtf8String(attributeNameIndex)
-	println("readAttribute attrName is: " + attrName)
 	attributeLength := cr.readUint32()
 	attrInfo := newAttributeInfo(attrName, attributeLength, cp)
 	attrInfo.readInfo(cr)
@@ -27,6 +26,8 @@ func newAttributeInfo(attrName string, attrLength uint32, cp *ConstantPool) Attr
 	switch attrName {
 	case "Code":
 		return &CodeAttribute{constantPool: cp}
+	case "ConstantValue":
+		return &ConstantValueAttribute{}
 	default:
 		return &UnparsedAttributeInfo{attrName, attrLength, nil}
 	}
@@ -61,8 +62,8 @@ type ExceptionTableEntry struct {
 }
 
 func (attr *CodeAttribute) readInfo(reader *ClassReader) {
-	attr.maxLocals = reader.readUint16()
 	attr.maxStack = reader.readUint16()
+	attr.maxLocals = reader.readUint16()
 	codeLength := reader.readUint32()
 	attr.code = reader.readBytes(codeLength)
 	attr.exceptionTable = readExceptionTable(reader)

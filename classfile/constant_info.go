@@ -29,14 +29,14 @@ type ConstantInfo interface {
 	String() string
 }
 
-func readConstantInfo(cr *ClassReader) ConstantInfo {
+func readConstantInfo(cr *ClassReader, cp ConstantPool) ConstantInfo {
 	tag := cr.readUint8()
-	ci := newConstantInfo(tag)
+	ci := newConstantInfo(tag, cp)
 	ci.readInfo(cr)
 	return ci
 }
 
-func newConstantInfo(tag uint8) ConstantInfo {
+func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo {
 	switch tag {
 	case constUtf8:
 		return &ConstantUtf8Info{}
@@ -49,17 +49,17 @@ func newConstantInfo(tag uint8) ConstantInfo {
 	case constDouble:
 		return &ConstantDoubleInfo{}
 	case constClass:
-		return &ConstantClassInfo{}
+		return &ConstantClassInfo{cp: cp}
 	case constString:
-		return &ConstantStringInfo{}
+		return &ConstantStringInfo{cp: cp}
 	case constNameAndType:
 		return &ConstantNameAndTypeInfo{}
 	case constFieldRef:
-		return &ConstantFieldRefInfo{}
+		return &ConstantFieldRefInfo{ConstantMemberInfo{cp: cp,}}
 	case constMehtodRef:
-		return &ConstantMethodRefInfo{}
+		return &ConstantMethodRefInfo{ConstantMemberInfo{cp: cp}}
 	case constInterfaceMethodRef:
-		return &ConstantInterfaceMethodRefInfo{}
+		return &ConstantInterfaceMethodRefInfo{ConstantMemberInfo{cp: cp}}
 	default:
 		fmt.Printf("constant tag is: %v", tag)
 		panic("invalid constant type!")
@@ -95,6 +95,10 @@ func (intInfo *ConstantIntegerInfo) readInfo(cr *ClassReader) {
 	intInfo.val = int32(bytes)
 }
 
+func (intInfo *ConstantIntegerInfo) Value() int32 {
+	return intInfo.val
+}
+
 func (intInfo *ConstantIntegerInfo) String() string {
 	return strconv.Itoa(int(intInfo.val))
 }
@@ -107,6 +111,10 @@ type ConstantFloatInfo struct {
 func (floatInfo *ConstantFloatInfo) readInfo(cr *ClassReader) {
 	bytes := cr.readUint32()
 	floatInfo.val = math.Float32frombits(bytes)
+}
+
+func (floatInfo *ConstantFloatInfo) Value() float32 {
+	return floatInfo.val
 }
 
 func (floatInfo *ConstantFloatInfo) String() string {
@@ -123,6 +131,10 @@ func (longInfo *ConstantLongInfo) readInfo(cr *ClassReader) {
 	longInfo.val = int64(bytes)
 }
 
+func (longInfo *ConstantLongInfo) Value() int64 {
+	return longInfo.val
+}
+
 func (longInfo *ConstantLongInfo) String() string {
 	return strconv.FormatInt(longInfo.val, 10)
 }
@@ -137,17 +149,26 @@ func (doubleInfo *ConstantDoubleInfo) readInfo(cr *ClassReader) {
 	doubleInfo.val = math.Float64frombits(bytes)
 }
 
+func (doubleInfo *ConstantDoubleInfo) Value() float64 {
+	return doubleInfo.val
+}
+
 func (doubleInfo *ConstantDoubleInfo) String() string {
 	return strconv.FormatFloat(doubleInfo.val, 'e', -1, 64)
 }
 
 //ConstantStringInfo 字符串类型常量
 type ConstantStringInfo struct {
+	cp          ConstantPool
 	stringIndex uint16
 }
 
 func (stringInfo *ConstantStringInfo) readInfo(cr *ClassReader) {
 	stringInfo.stringIndex = cr.readUint16()
+}
+
+func (stringInfo *ConstantStringInfo) Value() string {
+	return stringInfo.cp.getUtf8String(stringInfo.stringIndex)
 }
 
 func (stringInfo *ConstantStringInfo) String() string {
@@ -156,11 +177,17 @@ func (stringInfo *ConstantStringInfo) String() string {
 
 //ConstantClassInfo class常量
 type ConstantClassInfo struct {
+	cp             ConstantPool
 	classNameIndex uint16
 }
 
 func (classInfo *ConstantClassInfo) readInfo(cr *ClassReader) {
 	classInfo.classNameIndex = cr.readUint16()
+}
+
+//Value 返回类名
+func (classInfo *ConstantClassInfo) Value() string {
+	return classInfo.cp.getUtf8String(classInfo.classNameIndex)
 }
 
 func (classInfo *ConstantClassInfo) String() string {
@@ -183,8 +210,17 @@ func (info *ConstantNameAndTypeInfo) String() string {
 }
 
 type ConstantMemberInfo struct {
+	cp               ConstantPool
 	classIndex       uint16
 	nameAndTypeIndex uint16
+}
+
+func (info *ConstantMemberInfo) ClassName() string {
+	return info.cp.getClassName(info.classIndex)
+}
+
+func (info *ConstantMemberInfo) NameAndDescriptor() (string, string) {
+	return info.cp.getNameAndType(info.nameAndTypeIndex)
 }
 
 func (info *ConstantMemberInfo) readInfo(cr *ClassReader) {
