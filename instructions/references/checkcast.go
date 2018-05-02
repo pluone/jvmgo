@@ -10,9 +10,9 @@ type CheckCast struct {
 	base.Index16Instruction
 }
 
-func (checkCast *CheckCast) Execute(frame rtda.Frame) {
+func (checkCast *CheckCast) Execute(frame *rtda.Frame) {
 	constantPool := frame.Method().Class().ConstantPool()
-	classRef := constantPool.GetConstant(uint(checkCast.Index)).(heap.ClassRef)
+	classRef := constantPool.GetConstant(uint(checkCast.Index)).(*heap.ClassRef)
 	class := classRef.ResolvedClass()
 	ref := frame.OperandStack().PopRef()
 	if ref.IsInstanceOf(class) {

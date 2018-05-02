@@ -15,10 +15,10 @@ func (putStatic *PutStatic) Execute(frame *rtda.Frame) {
 	fieldRef := constantPool.GetConstant(uint(putStatic.Index)).(*heap.FieldRef)
 	field := fieldRef.ResolvedField()
 	class := field.Class()
-	if !class.IsStatic() {
+	if !field.IsStatic() {
 		panic("java.lang.IncompatibleClassChangeError")
 	}
-	if class.IsFinal() {
+	if field.IsFinal() {
 		if currentClass != class || currentMethod.Name() != "<clinit>" {
 			panic("java.lang.IllegalAccessError!")
 		}

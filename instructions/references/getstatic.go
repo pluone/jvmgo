@@ -10,7 +10,7 @@ type GetStatic struct {
 	base.Index16Instruction
 }
 
-func (getStatic *GetStatic) Execute(frame rtda.Frame) {
+func (getStatic *GetStatic) Execute(frame *rtda.Frame) {
 	constantPool := frame.Method().Class().ConstantPool()
 	fieldRef := constantPool.GetConstant(uint(getStatic.Index)).(*heap.FieldRef)
 	field := fieldRef.ResolvedField()

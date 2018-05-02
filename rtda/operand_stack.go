@@ -75,7 +75,6 @@ func (stack *OperandStack) PushRef(val *heap.Object) {
 func (stack *OperandStack) PopRef() *heap.Object {
 	stack.size--
 	refVal := stack.slots[stack.size].Ref()
-	stack.slots[stack.size].SetRef(nil) //help gc
 	return refVal
 }
 

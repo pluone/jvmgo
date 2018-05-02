@@ -10,7 +10,7 @@ type PutField struct {
 	base.Index16Instruction
 }
 
-func (putField *PutField) Execute(frame rtda.Frame) {
+func (putField *PutField) Execute(frame *rtda.Frame) {
 	currentMethod := frame.Method()
 	currentClass := currentMethod.Class()
 	constantPool := currentClass.ConstantPool()

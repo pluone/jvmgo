@@ -10,7 +10,7 @@ type InstanceOf struct {
 	base.Index16Instruction
 }
 
-func (instanceOf *InstanceOf) Execute(frame rtda.Frame) {
+func (instanceOf *InstanceOf) Execute(frame *rtda.Frame) {
 	constantPool := frame.Method().Class().ConstantPool()
 	classRef := constantPool.GetConstant(uint(instanceOf.Index)).(*heap.ClassRef)
 	class := classRef.ResolvedClass()

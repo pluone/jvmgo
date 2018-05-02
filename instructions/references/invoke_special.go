@@ -9,6 +9,6 @@ type InvokeSpecial struct {
 	base.Index16Instruction
 }
 
-func (invokeSpecial *InvokeSpecial) Execute(frame rtda.Frame)  {
+func (invokeSpecial *InvokeSpecial) Execute(frame *rtda.Frame)  {
 	frame.OperandStack().PopRef()//todo
 }

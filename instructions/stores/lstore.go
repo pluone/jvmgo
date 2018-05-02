@@ -12,6 +12,23 @@ type LSTORE_0 struct{ base.NoOperandsInstruction }
 type LSTORE_1 struct{ base.NoOperandsInstruction }
 type LSTORE_2 struct{ base.NoOperandsInstruction }
 type LSTORE_3 struct{ base.NoOperandsInstruction }
+type ASTORE_0 struct {
+	base.NoOperandsInstruction
+}
+type ASTORE_1 struct {
+	base.NoOperandsInstruction
+}
+type ASTORE_2 struct {
+	base.NoOperandsInstruction
+}
+type ASTORE_3 struct {
+	base.NoOperandsInstruction
+}
+
+func _astore(frame *rtda.Frame, index uint) {
+	val := frame.OperandStack().PopRef()
+	frame.LocalVar().SetRef(index, val)
+}
 
 func _lstore(frame *rtda.Frame, index uint) {
 	val := frame.OperandStack().PopLong()
@@ -48,4 +65,20 @@ func (store *LSTORE_2) Execute(frame *rtda.Frame) {
 }
 func (store *LSTORE_3) Execute(frame *rtda.Frame) {
 	_lstore(frame, 3)
+}
+
+func (store *ASTORE_0) Execute(frame *rtda.Frame) {
+	_astore(frame, 0)
+}
+
+func (store *ASTORE_1) Execute(frame *rtda.Frame) {
+	_astore(frame, 1)
+}
+
+func (store *ASTORE_2) Execute(frame *rtda.Frame) {
+	_astore(frame, 2)
+}
+
+func (store *ASTORE_3) Execute(frame *rtda.Frame) {
+	_astore(frame, 3)
 }

@@ -10,7 +10,7 @@ type NEW struct{ base.Index16Instruction }
 
 func (_new *NEW) Execute(frame *rtda.Frame) {
 	cp := frame.Method().Class().ConstantPool()
-	classRef := cp.GetConstant(_new.Index).(*heap.ClassRef)
+	classRef := cp.GetConstant(uint(_new.Index)).(*heap.ClassRef)
 	class := classRef.ResolvedClass()
 	if class.IsInterface() || class.IsAbstract() {
 		panic("java.lang.InstantiationError")

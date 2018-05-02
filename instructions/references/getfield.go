@@ -10,9 +10,9 @@ type GetField struct {
 	base.Index16Instruction
 }
 
-func (getField *GetField) Execute(frame rtda.Frame) {
+func (getField *GetField) Execute(frame *rtda.Frame) {
 	constantPool := frame.Method().Class().ConstantPool()
-	fieldRef := constantPool.GetConstant(uint(getField.Index)).(heap.FieldRef)
+	fieldRef := constantPool.GetConstant(uint(getField.Index)).(*heap.FieldRef)
 	field := fieldRef.ResolvedField()
 	descriptor := field.Descriptor()
 	slotId := field.SlotId()
